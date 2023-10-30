@@ -21,23 +21,22 @@ function findCorrelationFFT(latticeHist)
 end
 
 function findCorrelation(latticeHist,numt,dx,dy,trunc=0)
-    corr=zeros(ComplexF64,numt-trunc,dx,dy)
+    corr=zeros(ComplexF64,dx,dy,numt-trunc)
     for y=1:dx, dely=0:dx-1, x=1:dx, delx=0:dy-1
         for delt=0:numt-trunc-1
             cnt = 0
             for t=trunc+1:numt
                 if t+delt > numt 
-                    continsue
+                    continue
                 else
                     cnt = cnt + 1
-                    corr[delt+1,delx+1,dely+1]=(
-                        corr[delt+1,delx+1,dely+1]+
-                        exp(im*latticeHist[t,x,y])
-                        *exp(-im*latticeHist[t+delt,mod1(x+delx,end),mod1(y+dely,end)])
+                    corr[delx+1,dely+1,delt+1] += (
+                        latticeHist[x,y,t]
+                        *latticeHist[mod1(x+delx,end),mod1(y+dely,end),t+delt]
                     )
                 end
             end
-            corr[delt+1,delx+1,dely+1] = corr[delt+1,delx+1,dely+1]/cnt/dx/dy
+            corr[delx+1,dely+1,delt+1] = corr[delx+1,dely+1,delt+1]/cnt/dx/dy
         end
     end
     return corr

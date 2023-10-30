@@ -51,43 +51,25 @@ let
     save3DData(x_l,y_l,t_l,scoor,"data/231019/1_scoor")
 end
 
-let 
-    rnd = rand()
-end
-
-let 
-    run(`clear`)
-    dx = 2
-    dy = 2
-    dt = 10
-    pdf = 0.25
-    pdr = 0.4
-    panh = 1
-    pgen = 0.1
-    nsim = 1
-    pLatticeHistSim, nLatticeHistSim = genLatticeHistSim(dx,dy,dt,nsim)
-    plattice = @view pLatticeHistSim[1,1,:,:]
-end
-
-# run one exp
+# run & save brute force correlation
 let 
     run(`clear`)
     dx = 20
     dy = 20
-    Gamma0 = 1
-    T0 = 5
-    time = 10
-    dt = 0.1
+    dt = 100
+    pdf = 0.25
+    pdr = 0.25
+    panh = 1
+    pgen = 0.01
+    nsim = 100
     trunc = 10
-    nsim = 1
 
-    numt = convert(Int64,time/dt)
-
-    lattice_corr, vortice_corr = expOnce(dx,dy,Gamma0,T0,time,dt,trunc,nsim,true,true)
+    pcoor,ncoor,scoor = expBruteCoor(dx,dy,dt,pdr,pdf,panh,pgen,nsim,trunc,true)
 
     x_l = collect(1:dx)
     y_l = collect(1:dy)
-    t_l = collect(range(dt,time,step=dt))
-    saveComplex3DData(t_l[1:numt-trunc],x_l,y_l,lattice_corr,"data/230829/lattice_corr_1")
-    saveComplex3DData(t_l[1:numt-trunc],x_l,y_l,vortice_corr,"data/230829/vortice_corr_1")
+    t_l = collect(1:dt-trunc)
+    save3DData(x_l,y_l,t_l,pcoor,"data/231025/231025_1_pcoor")
+    save3DData(x_l,y_l,t_l,ncoor,"data/231025/231025_1_ncoor")
+    save3DData(x_l,y_l,t_l,scoor,"data/231025/231025_1_scoor")
 end
