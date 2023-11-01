@@ -24,13 +24,13 @@ end
 function walkParticle(pLattice,nLattice,pLatticeN,nLatticeN,x,y,pup,pdown,pdrive)
     if pLattice[x,y]
         rnd = rand()
-        if rnd < pup && !pLattice[x,mod1(y+1,end)] && !pLatticeN[x,mod1(y+1,end)]
+        if rnd < pup && !pLatticeN[x,mod1(y+1,end)]# && !pLattice[x,mod1(y+1,end)]
             pLatticeN[x,mod1(y+1,end)] = true
-        elseif rnd < pdown && !pLattice[x,mod1(y-1,end)] && !pLatticeN[x,mod1(y-1,end)]
+        elseif rnd < pdown && !pLatticeN[x,mod1(y-1,end)]# && !pLattice[x,mod1(y-1,end)]
             pLatticeN[x,mod1(y-1,end)] = true
-        elseif rnd < pdrive && !pLattice[mod1(x-1,end),y] && !pLatticeN[mod1(x-1,end),y]
+        elseif rnd < pdrive && !pLatticeN[mod1(x-1,end),y]# && !pLattice[mod1(x-1,end),y]
             pLatticeN[mod1(x-1,end),y] = true
-        elseif !pLattice[mod1(x+1,end),y] && !pLatticeN[mod1(x+1,end),y]
+        elseif !pLatticeN[mod1(x+1,end),y]# && !pLattice[mod1(x+1,end),y]
             pLatticeN[mod1(x+1,end),y] = true
         else
             pLatticeN[x,y] = true
@@ -38,13 +38,13 @@ function walkParticle(pLattice,nLattice,pLatticeN,nLatticeN,x,y,pup,pdown,pdrive
     end
     if nLattice[x,y]
         rnd = rand()
-        if rnd < pup && !nLattice[x,mod1(y+1,end)] && !nLatticeN[x,mod1(y+1,end)]
+        if rnd < pup && !nLatticeN[x,mod1(y+1,end)]# && !nLattice[x,mod1(y+1,end)]
             nLatticeN[x,mod1(y+1,end)] = true
-        elseif rnd < pdown && !nLattice[x,mod1(y-1,end)] && !nLatticeN[x,mod1(y-1,end)]
+        elseif rnd < pdown && !nLatticeN[x,mod1(y-1,end)]# && !nLattice[x,mod1(y-1,end)]
             nLatticeN[x,mod1(y-1,end)] = true
-        elseif rnd < pdrive && !nLattice[mod1(x+1,end),y] && !nLatticeN[mod1(x+1,end),y]
+        elseif rnd < pdrive && !nLatticeN[mod1(x+1,end),y]# && !nLattice[mod1(x+1,end),y]
             nLatticeN[mod1(x+1,end),y] = true
-        elseif !nLattice[mod1(x-1,end),y] && !nLatticeN[mod1(x-1,end),y]
+        elseif !nLatticeN[mod1(x-1,end),y]# && !nLattice[mod1(x-1,end),y]
             nLatticeN[mod1(x-1,end),y] = true
         else
             nLatticeN[x,y] = true

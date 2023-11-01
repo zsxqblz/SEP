@@ -4,7 +4,18 @@ include("exp.jl")
 include("pp.jl")
 
 let 
-    real([1,2im])
+    x = LinRange(-5,5,100)
+    y = [0]
+    t = LinRange(0.1,10,50)
+    data = [1]./sqrt.(t') .* exp.(-(x.^2) ./ t')
+    coor = findCorrelationFFT(data)
+    save3DData(x,y,t,real(data),"data/231025/231025_2_testData")
+    save3DData(x,y,t,real(coor),"data/231025/231025_2_testFFT")
+end
+
+let 
+    temp = Int.([true,false])
+    @show ifft(fft(temp))
 end
 
 # run & save one simulation
@@ -38,7 +49,7 @@ let
     pdf = 0.25
     pdr = 0.25
     panh = 1
-    pgen = 0.01
+    pgen = 0.1
     nsim = 10000
 
     pcoor,ncoor,scoor = expCoor(dx,dy,dt,pdr,pdf,panh,pgen,nsim,true)
@@ -46,9 +57,9 @@ let
     x_l = collect(1:dx)
     y_l = collect(1:dy)
     t_l = collect(1:dt)
-    save3DData(x_l,y_l,t_l,pcoor,"data/231019/1_pcoor")
-    save3DData(x_l,y_l,t_l,ncoor,"data/231019/1_ncoor")
-    save3DData(x_l,y_l,t_l,scoor,"data/231019/1_scoor")
+    save3DData(x_l,y_l,t_l,pcoor,"data/231025/231025_3_pcoor")
+    save3DData(x_l,y_l,t_l,ncoor,"data/231025/231025_3_ncoor")
+    save3DData(x_l,y_l,t_l,scoor,"data/231025/231025_3_scoor")
 end
 
 # run & save brute force correlation
