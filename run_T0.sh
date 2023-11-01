@@ -21,4 +21,4 @@ let nsim=100
 let id=0+i
 let date=230830
 
-julia run_exp.jl $dx $dy $Gamma0 $T0 $time $dt $trunc $nsim data/${date}/${date}_d${id}_
+# julia run_exp.jl $dx $dy $Gamma0 $T0 $time $dt $trunc $nsim data/${date}/${date}_d${id}_

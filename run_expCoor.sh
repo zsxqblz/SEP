@@ -9,7 +9,6 @@
 #SBATCH --mail-user=yz4281@princeton.edu
 
 let i=$1
-T0=$((i*0.5))
 let dx=100
 let dy=100
 let dt=100
