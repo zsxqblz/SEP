@@ -16,8 +16,8 @@ end
 
 function findCorrelationFFT(latticeHist)
     latticeFFT = fft(latticeHist)
-    return ifft(abs.(latticeFFT).^2)
-    
+    return ifft(abs.(latticeFFT).^2) - latticeHist.^2
+    # return latticeHist
 end
 
 function findCorrelation(latticeHist,numt,dx,dy,trunc=0)

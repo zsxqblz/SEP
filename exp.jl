@@ -19,7 +19,8 @@ end
 function expCoor(dx,dy,dt,pdr,pdf,panh,pgen,nsim)
     pup = pdf
     pdown = pup + pdf
-    pdrive = pdown + pdr
+    # pdrive = pdown + pdr
+    pdrive = pdr
 
     pcoor = zeros(Float64,(dx, dy, dt))
     ncoor = zeros(Float64,(dx, dy, dt))
@@ -46,7 +47,8 @@ end
 function expCoor(dx,dy,dt,pdr,pdf,panh,pgen,nsim,showProg::Bool)
     pup = pdf
     pdown = pup + pdf
-    pdrive = pdown + pdr
+    # pdrive = pdown + pdr
+    pdrive = pdr
 
     pcoor = zeros(Float64,(dx, dy, dt))
     ncoor = zeros(Float64,(dx, dy, dt))
@@ -68,6 +70,7 @@ function expCoor(dx,dy,dt,pdr,pdf,panh,pgen,nsim,showProg::Bool)
     ncoor = ncoor / nsim
     scoor = scoor / nsim
     return pcoor,ncoor,scoor
+    # return Int.(pLatticeHist), Int.(nLatticeHist), Int.(pLatticeHist)-Int.(nLatticeHist)
 end
 
 function expBruteCoor(dx,dy,dt,pdr,pdf,panh,pgen,nsim,trunc,showProg::Bool)

@@ -40,26 +40,51 @@ let
     save4DData(sim_l,t_l,x_l,y_l,Int.(nLatticeHistSim),"data/231019/test_n")
 end
 
+# scan pdr
+let 
+    for i = 1:10
+        run(`clear`)
+        dx = 100
+        dy = 100
+        dt = 300
+        pdf = 0.25
+        pdr = 0.0
+        panh = 1
+        pgen = 0.001*i
+        nsim = 100
+        idx_start = 20
+
+        pcoor,ncoor,scoor = expCoor(dx,dy,dt,pdr,pdf,panh,pgen,nsim,true)
+
+        x_l = collect(1:dx)
+        y_l = collect(1:dy)
+        t_l = collect(1:dt)
+        save3DData(x_l,y_l,t_l,pcoor,string("data/240627/240627_",(idx_start+i),"_pcoor"))
+        save3DData(x_l,y_l,t_l,ncoor,string("data/240627/240627_",(idx_start+i),"_ncoor"))
+        save3DData(x_l,y_l,t_l,scoor,string("data/240627/240627_",(idx_start+i),"_scoor"))
+    end
+end
+
 # run & save correlation
 let 
     run(`clear`)
-    dx = 20
-    dy = 20
-    dt = 100
+    dx = 100
+    dy = 100
+    dt = 300
     pdf = 0.25
-    pdr = 0.25
+    pdr = 0.
     panh = 1
-    pgen = 0.1
-    nsim = 10000
+    pgen = 0.001
+    nsim = 100
 
     pcoor,ncoor,scoor = expCoor(dx,dy,dt,pdr,pdf,panh,pgen,nsim,true)
 
     x_l = collect(1:dx)
     y_l = collect(1:dy)
     t_l = collect(1:dt)
-    save3DData(x_l,y_l,t_l,pcoor,"data/231025/231025_3_pcoor")
-    save3DData(x_l,y_l,t_l,ncoor,"data/231025/231025_3_ncoor")
-    save3DData(x_l,y_l,t_l,scoor,"data/231025/231025_3_scoor")
+    save3DData(x_l,y_l,t_l,pcoor,"data/240627/240627_3_pcoor")
+    save3DData(x_l,y_l,t_l,ncoor,"data/240627/240627_3_ncoor")
+    save3DData(x_l,y_l,t_l,scoor,"data/240627/240627_3_scoor")
 end
 
 # run & save brute force correlation
