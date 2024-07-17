@@ -22,6 +22,92 @@ function updateParticle(pLattice,nLattice,pLatticeN,nLatticeN,dx,dy,pup,pdown,pd
     end
 end
 
+function updateParticleChecker(pLattice,nLattice,pLatticeN,nLatticeN,dx,dy,pup,pdown,pdrive,pgen,panh)
+    # pup = pdf
+    # pdown = pup + pdf
+    # pdrive = pdown + pdr
+    for y = 1:dy,x = 1:dx
+        walkParticleChecker(pLattice,nLattice,pLatticeN,nLatticeN,x,y,pup,pdown,pdrive)
+        annhilateParticle(pLatticeN,nLatticeN,x,y,panh)
+        genParticle(pLatticeN,nLatticeN,x,y,pgen)
+    end
+end
+
+function walkParticleChecker(pLattice,nLattice,pLatticeN,nLatticeN,x,y,pup,pdown,pdrive)
+    if pLattice[x,y]
+        rnd = rand()
+        if rnd < pup && !pLatticeN[x,mod1(y+1,end)]# && !pLattice[x,mod1(y+1,end)]
+            pLatticeN[x,mod1(y+1,end)] = true
+        elseif rnd < pdown && !pLatticeN[x,mod1(y-1,end)]# && !pLattice[x,mod1(y-1,end)]
+            pLatticeN[x,mod1(y-1,end)] = true
+        elseif rnd < pdrive && !pLatticeN[mod1(x-1,end),y]# && !pLattice[mod1(x-1,end),y]
+            pLatticeN[mod1(x-1,end),y] = true
+        elseif !pLatticeN[mod1(x+1,end),y]# && !pLattice[mod1(x+1,end),y]
+            pLatticeN[mod1(x+1,end),y] = true
+        else
+            pLatticeN[x,y] = true
+        end
+    end
+    if nLattice[x,y]
+        rnd = rand()
+        if rnd < pup && !nLatticeN[x,mod1(y+1,end)]# && !nLattice[x,mod1(y+1,end)]
+            nLatticeN[x,mod1(y+1,end)] = true
+        elseif rnd < pdown && !nLatticeN[x,mod1(y-1,end)]# && !nLattice[x,mod1(y-1,end)]
+            nLatticeN[x,mod1(y-1,end)] = true
+        elseif rnd < pdrive && !nLatticeN[mod1(x+1,end),y]# && !nLattice[mod1(x+1,end),y]
+            nLatticeN[mod1(x+1,end),y] = true
+        elseif !nLatticeN[mod1(x-1,end),y]# && !nLattice[mod1(x-1,end),y]
+            nLatticeN[mod1(x-1,end),y] = true
+        else
+            nLatticeN[x,y] = true
+        end
+    end
+    # if pLattice[x,y]
+    #     rnd = rand()
+    #     if rnd < 1/8 + pdrive && !pLatticeN[x,mod1(y+1,end)]# && !pLattice[x,mod1(y+1,end)]
+    #         pLatticeN[x,mod1(y+1,end)] = true
+    #     elseif rnd < 2/8 && !pLatticeN[x,mod1(y-1,end)]# && !pLattice[x,mod1(y-1,end)]
+    #         pLatticeN[x,mod1(y-1,end)] = true
+    #     elseif rnd < 3/8 && !pLatticeN[mod1(x-1,end),y]# && !pLattice[mod1(x-1,end),y]
+    #         pLatticeN[mod1(x-1,end),y] = true
+    #     elseif rnd < 4/8 && !pLatticeN[mod1(x+1,end),y]# && !pLattice[mod1(x+1,end),y]
+    #         pLatticeN[mod1(x+1,end),y] = true
+    #     elseif rnd < 5/8 - pdrive && !pLatticeN[mod1(x-1,end),mod1(y-1,end)]# && !pLattice[x,mod1(y-1,end)]
+    #         pLatticeN[mod1(x-1,end),mod1(y-1,end)] = true
+    #     elseif rnd < 6/8 && !pLatticeN[mod1(x-1,end),mod1(y+1,end)]# && !pLattice[x,mod1(y-1,end)]
+    #         pLatticeN[mod1(x-1,end),mod1(y+1,end)] = true
+    #     elseif rnd < 7/8 - pdrive && !pLatticeN[mod1(x+1,end),mod1(y-1,end)]# && !pLattice[x,mod1(y-1,end)]
+    #         pLatticeN[mod1(x+1,end),mod1(y-1,end)] = true
+    #     elseif rnd < 8/8 && !pLatticeN[mod1(x+1,end),mod1(y+1,end)]# && !pLattice[x,mod1(y-1,end)]
+    #         pLatticeN[mod1(x+1,end),mod1(y+1,end)] = true
+    #     else
+    #         pLatticeN[x,y] = true
+    #     end
+    # end
+    # if nLattice[x,y]
+    #     rnd = rand()
+    #     if rnd < 1/8 - pdrive && !nLatticeN[x,mod1(y+1,end)]# && !nLattice[x,mod1(y+1,end)]
+    #         nLatticeN[x,mod1(y+1,end)] = true
+    #     elseif rnd < 2/8 && !nLatticeN[x,mod1(y-1,end)]# && !nLattice[x,mod1(y-1,end)]
+    #         nLatticeN[x,mod1(y-1,end)] = true
+    #     elseif rnd < 3/8 && !nLatticeN[mod1(x-1,end),y]# && !nLattice[mod1(x-1,end),y]
+    #         nLatticeN[mod1(x-1,end),y] = true
+    #     elseif rnd < 4/8 && !nLatticeN[mod1(x+1,end),y]# && !nLattice[mod1(x+1,end),y]
+    #         nLatticeN[mod1(x+1,end),y] = true
+    #     elseif rnd < 5/8 + pdrive && !nLatticeN[mod1(x-1,end),mod1(y-1,end)]# && !nLattice[x,mod1(y-1,end)]
+    #         nLatticeN[mod1(x-1,end),mod1(y-1,end)] = true
+    #     elseif rnd < 6/8 && !nLatticeN[mod1(x-1,end),mod1(y+1,end)]# && !nLattice[x,mod1(y-1,end)]
+    #         nLatticeN[mod1(x-1,end),mod1(y+1,end)] = true
+    #     elseif rnd < 7/8 + pdrive && !nLatticeN[mod1(x+1,end),mod1(y-1,end)]# && !nLattice[x,mod1(y-1,end)]
+    #         nLatticeN[mod1(x+1,end),mod1(y-1,end)] = true
+    #     elseif rnd < 8/8 && !nLatticeN[mod1(x+1,end),mod1(y+1,end)]# && !nLattice[x,mod1(y-1,end)]
+    #         nLatticeN[mod1(x+1,end),mod1(y+1,end)] = true
+    #     else
+    #         nLatticeN[x,y] = true
+    #     end
+    # end
+end
+
 function walkParticle(pLattice,nLattice,pLatticeN,nLatticeN,x,y,pup,pdown,pdrive)
     # if pLattice[x,y]
     #     rnd = rand()
