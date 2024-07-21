@@ -16,6 +16,23 @@ function expOnce(dx,dy,dt,pdr,pdf,panh,pgen,nsim)
     return pLatticeHistSim,nLatticeHistSim
 end
 
+function expOnceRndChecker(dx,dy,dt,pdr,pdf,panh,pgen,nsim)
+    pup = pdf
+    pdown = pup + pdf
+    pdrive = pdown + pdr
+
+    pLatticeHistSim, nLatticeHistSim = genLatticeHistSim(dx,dy,dt,nsim)
+
+    for sim_i = 1:nsim, t = 2:dt
+        plattice = @view pLatticeHistSim[:,:,t-1,sim_i]
+        nlattice = @view nLatticeHistSim[:,:,t-1,sim_i]
+        platticeN = @view pLatticeHistSim[:,:,t,sim_i]
+        nlatticeN = @view nLatticeHistSim[:,:,t,sim_i]
+        updateParticleRndChecker(plattice,nlattice,platticeN,nlatticeN,dx,dy,pup,pdown,pdrive,pgen,panh)
+    end
+    return pLatticeHistSim,nLatticeHistSim
+end
+
 function expCoor(dx,dy,dt,pdr,pdf,panh,pgen,nsim)
     pup = pdf
     pdown = pup + pdf
@@ -90,6 +107,35 @@ function expCoorChecker(dx,dy,dt,pdr,pdf,panh,pgen,nsim,showProg::Bool)
             platticeN = @view pLatticeHist[:,:,t]
             nlatticeN = @view nLatticeHist[:,:,t]
             updateParticleChecker(plattice,nlattice,platticeN,nlatticeN,dx,dy,pup,pdown,pdrive,pgen,panh)
+        end
+        pcoor += real(findCorrelationFFT(Int.(pLatticeHist)))
+        ncoor += real(findCorrelationFFT(Int.(nLatticeHist)))
+        scoor += real(findCorrelationFFT(Int.(pLatticeHist)-Int.(nLatticeHist)))
+    end
+    pcoor = pcoor / nsim
+    ncoor = ncoor / nsim
+    scoor = scoor / nsim
+    return pcoor,ncoor,scoor
+    # return Int.(pLatticeHist), Int.(nLatticeHist), Int.(pLatticeHist)-Int.(nLatticeHist)
+end
+
+function expCoorRndChecker(dx,dy,dt,pdr,pdf,panh,pgen,nsim,showProg::Bool)
+    pup = pdf
+    pdown = pup + pdf
+    pdrive = pdown + pdr
+    # pdrive = pdr
+
+    pcoor = zeros(Float64,(dx, dy, dt))
+    ncoor = zeros(Float64,(dx, dy, dt))
+    scoor = zeros(Float64,(dx, dy, dt))
+    @showprogress for sim_i = 1:nsim
+        pLatticeHist, nLatticeHist = genLatticeHist(dx,dy,dt)
+        for t = 2:dt
+            plattice = @view pLatticeHist[:,:,t-1]
+            nlattice = @view nLatticeHist[:,:,t-1]
+            platticeN = @view pLatticeHist[:,:,t]
+            nlatticeN = @view nLatticeHist[:,:,t]
+            updateParticleRndChecker(plattice,nlattice,platticeN,nlatticeN,dx,dy,pup,pdown,pdrive,pgen,panh)
         end
         pcoor += real(findCorrelationFFT(Int.(pLatticeHist)))
         ncoor += real(findCorrelationFFT(Int.(nLatticeHist)))
