@@ -1,5 +1,5 @@
 using Distributed
-addprocs(3)
+addprocs(10)
 @everywhere using SharedArrays
 using Dates
 
@@ -15,9 +15,9 @@ using Dates
     pdf = 0.25
     pdr = 0.25
     panh = 1
-    pgen = 0.001*i
+    pgen = 0.1*i
     nsim = 1000
-    idx_start = 0
+    idx_start = 40
 
     pcoor,ncoor,scoor = expCoorRndChecker(dx,dy,dt,pdr,pdf,panh,pgen,nsim,true)
 
