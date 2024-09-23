@@ -13,11 +13,11 @@ using Dates
     dy = 100
     dt = 400
     pdf = 0.25
-    pdr = 0.25+0.01*i
+    pdr = 0.25
     panh = 1
-    pgen = 0.01
+    pgen = 0.1*i
     nsim = 100
-    idx_start = 20
+    idx_start = 50
 
     pcoor,ncoor,scoor = expCoorRnd(dx,dy,dt,pdr,pdf,panh,pgen,nsim,true)
 
