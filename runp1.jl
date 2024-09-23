@@ -1,5 +1,5 @@
 using Distributed
-addprocs(3)
+addprocs(10)
 @everywhere using SharedArrays
 using Dates
 
@@ -15,16 +15,16 @@ using Dates
     pdf = 0.25
     pdr = 0.25
     panh = 1
-    pgen = 0.001*i
-    nsim = 1000
-    idx_start = 0
+    pgen = 0.1*i
+    nsim = 100
+    idx_start = 50
 
-    pcoor,ncoor,scoor = expCoorRndChecker(dx,dy,dt,pdr,pdf,panh,pgen,nsim,true)
+    pcoor,ncoor,scoor = expCoorRnd(dx,dy,dt,pdr,pdf,panh,pgen,nsim,true)
 
     x_l = collect(1:dx)
     y_l = collect(1:dy)
     t_l = collect(1:dt)
-    save3DData(x_l,y_l,t_l,pcoor,string("data/240718/240718_",(idx_start+i),"_pcoor"))
-    save3DData(x_l,y_l,t_l,ncoor,string("data/240718/240718_",(idx_start+i),"_ncoor"))
-    save3DData(x_l,y_l,t_l,scoor,string("data/240718/240718_",(idx_start+i),"_scoor"))
+    save3DData(x_l,y_l,t_l,pcoor,string("data/240919/240919_",(idx_start+i),"_pcoor"))
+    save3DData(x_l,y_l,t_l,ncoor,string("data/240919/240919_",(idx_start+i),"_ncoor"))
+    save3DData(x_l,y_l,t_l,scoor,string("data/240919/240919_",(idx_start+i),"_scoor"))
 end

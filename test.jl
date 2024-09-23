@@ -27,7 +27,7 @@ let
     pdf = 0.25
     pdr = 0.4
     panh = 1
-    pgen = 0.001
+    pgen = 0.01
     nsim = 1
 
     pLatticeHistSim,nLatticeHistSim = expOnceRndChecker(dx,dy,dt,pdr,pdf,panh,pgen,nsim)

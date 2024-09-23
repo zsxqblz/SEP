@@ -33,6 +33,15 @@ function updateParticleChecker(pLattice,nLattice,pLatticeN,nLatticeN,dx,dy,pup,p
     end
 end
 
+function updateParticleRnd(pLattice,nLattice,pLatticeN,nLatticeN,dx,dy,pup,pdown,pdrive,pgen,panh)
+    walkParticleRnd(pLattice,pLatticeN,pup,pdown,pdrive,+1)
+    walkParticleRnd(nLattice,nLatticeN,pup,pdown,pdrive,-1)
+    for y = 1:dy,x = 1:dx
+        annhilateParticle(pLatticeN,nLatticeN,x,y,panh)
+        genParticle(pLatticeN,nLatticeN,x,y,pgen)
+    end
+end
+
 function updateParticleRndChecker(pLattice,nLattice,pLatticeN,nLatticeN,dx,dy,pup,pdown,pdrive,pgen,panh)
     walkParticleRndChecker(pLattice,pLatticeN,pup,pdown,pdrive,+1)
     walkParticleRndChecker(nLattice,nLatticeN,pup,pdown,pdrive,-1)
@@ -190,6 +199,50 @@ function walkParticle(pLattice,nLattice,pLatticeN,nLatticeN,x,y,pup,pdown,pdrive
             nLatticeN[x,y] = true
         end
     end
+end
+
+function walkParticleRnd(Lattice,LatticeN,pup,pdown,pdrive,sign)
+    # row, col, val = findnz(Lattice)
+    # perm_idx = collect(1:length(row))
+    # row = row[perm_idx]
+    # col = col[perm_idx]
+    indices = findall(!iszero, Lattice)
+    shuffle!(indices)
+
+    LatticeN[indices] .= true
+    for index in indices
+        x = index[1]
+        y = index[2]
+        rnd = rand()
+        if rnd < 1/8 + (sign*pdrive) && !LatticeN[x,mod1(y+1,end)]# && !Lattice[x,mod1(y+1,end)]
+            LatticeN[x,y] = false
+            LatticeN[x,mod1(y+1,end)] = true
+        elseif rnd < 2/8 && !LatticeN[x,mod1(y-1,end)]# && !Lattice[x,`mod1(y-1,end)]
+            LatticeN[x,y] = false
+            LatticeN[x,mod1(y-1,end)] = true
+        elseif rnd < 3/8 && !LatticeN[mod1(x-1,end),y]# && !Lattice[mod1(x-1,end),y]
+            LatticeN[x,y] = false
+            LatticeN[mod1(x-1,end),y] = true
+        elseif rnd < 4/8 && !LatticeN[mod1(x+1,end),y]# && !Lattice[mod1(x+1,end),y]
+            LatticeN[x,y] = false
+            LatticeN[mod1(x+1,end),y] = true
+        elseif rnd < 5/8 - (sign*pdrive) && !LatticeN[mod1(x-1,end),mod1(y-1,end)]# && !Lattice[x,mod1(y-1,end)]
+            LatticeN[x,y] = false
+            LatticeN[mod1(x-1,end),mod1(y-1,end)] = true
+        elseif rnd < 6/8 && !LatticeN[mod1(x-1,end),mod1(y+1,end)]# && !Lattice[x,mod1(y-1,end)]
+            LatticeN[x,y] = false
+            LatticeN[mod1(x-1,end),mod1(y+1,end)] = true
+        elseif rnd < 7/8 - (sign*pdrive) && !LatticeN[mod1(x+1,end),mod1(y-1,end)]# && !Lattice[x,mod1(y-1,end)]
+            LatticeN[x,y] = false
+            LatticeN[mod1(x+1,end),mod1(y-1,end)] = true
+        elseif rnd < 8/8 && !LatticeN[mod1(x+1,end),mod1(y+1,end)]# && !Lattice[x,mod1(y-1,end)]
+            LatticeN[x,y] = false
+            LatticeN[mod1(x+1,end),mod1(y+1,end)] = true
+        else
+            LatticeN[x,y] = true
+        end
+    end
+    # return LatticeN
 end
 
 function walkParticleRndChecker(Lattice,LatticeN,pup,pdown,pdrive,sign)
