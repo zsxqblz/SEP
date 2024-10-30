@@ -15,13 +15,13 @@ let dx=100
 let dy=100
 let dt=2000
 let pdf=0.25
-let "pdr=0.25"
+let "pdr=0.4"
 let panh=1
-let "pgen=0.1"
+let "pgen=0.01"
 let nsim=1000
 # let nsim=1
 
-let "id=10200+i"
+let "id=20100+i"
 let date=240721
 
 julia run_expCoorRndChecker.jl $dx $dy $dt $pdf $pdr $panh $pgen $nsim data/${date}/${date}_d${id}_
