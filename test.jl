@@ -52,7 +52,7 @@ let
         run(`clear`)
         dx = 100
         dy = 100
-        dt = 300
+        dt = 200
         pdf = 0.25
         pdr = 0.25
         panh = 1
@@ -68,6 +68,31 @@ let
         save3DData(x_l,y_l,t_l,pcoor,string("data/240718/240718_",(idx_start+i),"_pcoor"))
         save3DData(x_l,y_l,t_l,ncoor,string("data/240718/240718_",(idx_start+i),"_ncoor"))
         save3DData(x_l,y_l,t_l,scoor,string("data/240718/240718_",(idx_start+i),"_scoor"))
+    end
+end
+
+# scan pdr RndField
+let 
+    for i = 1:2
+        run(`clear`)
+        dx = 10
+        dy = 10
+        dt = 20
+        pdr = 0.5*(i-1)
+        panh = 1
+        pgen = 0.01
+        tempr = 1
+        nsim = 100
+        idx_start = 0
+
+        pcoor,ncoor,scoor = expCoorRndField(dx,dy,dt,pdr,pdf,panh,pgen,nsim,true)
+
+        x_l = collect(1:dx)
+        y_l = collect(1:dy)
+        t_l = collect(1:dt)
+        save3DData(x_l,y_l,t_l,pcoor,string("data/241030/241030_",(idx_start+i),"_pcoor"))
+        save3DData(x_l,y_l,t_l,ncoor,string("data/241030/241030_",(idx_start+i),"_ncoor"))
+        save3DData(x_l,y_l,t_l,scoor,string("data/241030/241030_",(idx_start+i),"_scoor"))
     end
 end
 
@@ -122,4 +147,11 @@ let
     @show X
     a = ['a','b','c']
     @show a[X]
+end
+
+let 
+    pLattice = zeros(Bool,5,5)
+    pLattice[1,1] = true
+    nLattice = zeros(Bool,5,5)
+    genField(nLattice,pLattice,5,5)
 end

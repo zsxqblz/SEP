@@ -11,6 +11,20 @@ function genLatticeHist(dx,dy,dt)
     # return rand(Bool, (dx,dy,dt)), rand(Bool, (dx,dy,dt))
 end
 
+function genField(pLattice,nLattice,dx,dy)
+    kernel = zeros(dx,dy)
+    for y = 1:dy
+        for x = 1:dy
+            xoff = x - (dx+1)/2
+            yoff = y - (dy+1)/2
+            kernel[x,y] = -log(sqrt(xoff^2+yoff^2+0.01))
+        end
+    end
+    field = imfilter(Float64.(pLattice), kernel, "circular")
+    field -= imfilter(Float64.(nLattice), kernel, "circular")
+    return field
+end
+
 function updateParticle(pLattice,nLattice,pLatticeN,nLatticeN,dx,dy,pup,pdown,pdrive,pgen,panh)
     # pup = pdf
     # pdown = pup + pdf
@@ -36,6 +50,16 @@ end
 function updateParticleRnd(pLattice,nLattice,pLatticeN,nLatticeN,dx,dy,pup,pdown,pdrive,pgen,panh)
     walkParticleRnd(pLattice,pLatticeN,pup,pdown,pdrive,+1)
     walkParticleRnd(nLattice,nLatticeN,pup,pdown,pdrive,-1)
+    for y = 1:dy,x = 1:dx
+        annhilateParticle(pLatticeN,nLatticeN,x,y,panh)
+        genParticle(pLatticeN,nLatticeN,x,y,pgen)
+    end
+end
+
+function updateParticleRndField(pLattice,nLattice,pLatticeN,nLatticeN,dx,dy,pdrive,pgen,panh,tempr)
+    field = genField(pLattice,nLattice,dx,dy)
+    walkParticleRndField(pLattice,pLatticeN,field,pdrive,+1,tempr)
+    walkParticleRndField(nLattice,nLatticeN,field,pdrive,-1,tempr)
     for y = 1:dy,x = 1:dx
         annhilateParticle(pLatticeN,nLatticeN,x,y,panh)
         genParticle(pLatticeN,nLatticeN,x,y,pgen)
@@ -243,6 +267,72 @@ function walkParticleRnd(Lattice,LatticeN,pup,pdown,pdrive,sign)
         end
     end
     # return LatticeN
+end
+
+function walkParticleRndField(Lattice,LatticeN,field,pdrive,sign,tempr)
+    # row, col, val = findnz(Lattice)
+    # perm_idx = collect(1:length(row))
+    # row = row[perm_idx]
+    # col = col[perm_idx]
+    indices = findall(!iszero, Lattice)
+    shuffle!(indices)
+
+    LatticeN[indices] .= true
+    for index in indices
+        x = index[1]
+        y = index[2]
+
+        weight_1 = exp(field[x,mod1(y+1,end)]/tempr)
+        weight_2 = weight_1 + exp(field[x,mod1(y-1,end)]/tempr)
+        weight_3 = weight_2 + exp(field[mod1(x-1,end),y]/tempr)
+        weight_4 = weight_3 + exp(field[mod1(x+1,end),y]/tempr)
+        weight_5 = weight_4 + exp(field[mod1(x-1,end),mod1(y-1,end)]/tempr)
+        weight_6 = weight_5 + exp(field[mod1(x-1,end),mod1(y+1,end)]/tempr)
+        weight_7 = weight_6 + exp(field[mod1(x+1,end),mod1(y-1,end)]/tempr)
+        weight_8 = weight_7 + exp(field[mod1(x+1,end),mod1(y+1,end)]/tempr)
+        # weight_sum = ( 
+        #     exp(field[x,mod1(y+1,end)]/tempr) + exp(field[x,mod1(y-1,end)]/tempr)
+        #     + exp(field[mod1(x-1,end),y]/tempr) + exp(field[mod1(x+1,end),y]/tempr)
+        #     + exp(field[mod1(x-1,end),mod1(y-1,end)]/tempr)
+        #     + exp(field[mod1(x-1,end),mod1(y+1,end)]/tempr)
+        #     + exp(field[mod1(x+1,end),mod1(y-1,end)]/tempr)
+        #     + exp(field[mod1(x+1,end),mod1(y+1,end)]/tempr)
+        # )
+        rnd_dr = rand()
+        if rnd_dr < pdrive && !LatticeN[x,mod1(y+sign,end)]
+            LatticeN[x,y] = false
+            LatticeN[x,mod1(y+sign,end)] = true
+        else
+            rnd = rand()
+            if rnd < weight_1 && !LatticeN[x,mod1(y+1,end)]
+                LatticeN[x,y] = false
+                LatticeN[x,mod1(y+1,end)] = true
+            elseif rnd < weight_2 && !LatticeN[x,mod1(y-1,end)]
+                LatticeN[x,y] = false
+                LatticeN[x,mod1(y-1,end)] = true
+            elseif rnd < weight_3 && !LatticeN[mod1(x-1,end),y]
+                LatticeN[x,y] = false
+                LatticeN[mod1(x-1,end),y] = true
+            elseif rnd < weight_4 && !LatticeN[mod1(x+1,end),y]
+                LatticeN[x,y] = false
+                LatticeN[mod1(x+1,end),y] = true
+            elseif rnd < weight_5 && !LatticeN[mod1(x-1,end),mod1(y-1,end)]
+                LatticeN[x,y] = false
+                LatticeN[mod1(x-1,end),mod1(y-1,end)] = true
+            elseif rnd < weight_6 && !LatticeN[mod1(x-1,end),mod1(y+1,end)]
+                LatticeN[x,y] = false
+                LatticeN[mod1(x-1,end),mod1(y+1,end)] = true
+            elseif rnd < weight_7 && !LatticeN[mod1(x+1,end),mod1(y-1,end)]
+                LatticeN[x,y] = false
+                LatticeN[mod1(x+1,end),mod1(y-1,end)] = true
+            elseif rnd < weight_8 && !LatticeN[mod1(x+1,end),mod1(y+1,end)]
+                LatticeN[x,y] = false
+                LatticeN[mod1(x+1,end),mod1(y+1,end)] = true
+            else
+                LatticeN[x,y] = true
+            end
+        end
+    end
 end
 
 function walkParticleRndChecker(Lattice,LatticeN,pup,pdown,pdrive,sign)
