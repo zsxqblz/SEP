@@ -3,21 +3,6 @@ include("sim.jl")
 include("exp.jl")
 include("pp.jl")
 
-let 
-    x = LinRange(-5,5,100)
-    y = [0]
-    t = LinRange(0.1,10,50)
-    data = [1]./sqrt.(t') .* exp.(-(x.^2) ./ t')
-    coor = findCorrelationFFT(data)
-    save3DData(x,y,t,real(data),"data/231025/231025_2_testData")
-    save3DData(x,y,t,real(coor),"data/231025/231025_2_testFFT")
-end
-
-let 
-    temp = Int.([true,false])
-    @show ifft(fft(temp))
-end
-
 # run & save one simulation
 let 
     run(`clear`)
@@ -40,11 +25,6 @@ let
     save4DData(x_l,y_l,t_l,sim_l,Int.(nLatticeHistSim),"data/240718/240718_rndChecker_1_n")
 end
 
-let 
-    A = [0 1 0; 2 0 3; 0 4 0]
-    indices = findall(!iszero, A)
-    @show shuffle(indices)
-end
 
 # scan pdr
 let 
@@ -73,19 +53,19 @@ end
 
 # scan pdr RndField
 let 
-    for i = 1:2
-        run(`clear`)
-        dx = 10
-        dy = 10
-        dt = 20
-        pdr = 0.5*(i-1)
+    run(`clear`)
+    for i = 1:1
+        dx = 100
+        dy = 100
+        dt = 200
+        pdr = 0.5
         panh = 1
         pgen = 0.01
-        tempr = 1
-        nsim = 100
-        idx_start = 0
+        tempr = 10
+        nsim = 1000
+        idx_start = 40
 
-        pcoor,ncoor,scoor = expCoorRndField(dx,dy,dt,pdr,pdf,panh,pgen,nsim,true)
+        pcoor,ncoor,scoor,currentHistSum = expCoorRndField(dx,dy,dt,pdr,panh,pgen,nsim,tempr,true)
 
         x_l = collect(1:dx)
         y_l = collect(1:dy)
@@ -93,6 +73,7 @@ let
         save3DData(x_l,y_l,t_l,pcoor,string("data/241030/241030_",(idx_start+i),"_pcoor"))
         save3DData(x_l,y_l,t_l,ncoor,string("data/241030/241030_",(idx_start+i),"_ncoor"))
         save3DData(x_l,y_l,t_l,scoor,string("data/241030/241030_",(idx_start+i),"_scoor"))
+        save3DData(x_l,y_l,t_l,currentHistSum,string("data/241030/241030_",(idx_start+i),"_current"))
     end
 end
 
@@ -151,7 +132,7 @@ end
 
 let 
     pLattice = zeros(Bool,5,5)
-    pLattice[1,1] = true
-    nLattice = zeros(Bool,5,5)
-    genField(nLattice,pLattice,5,5)
+    pLattice[2,3] = true
+    indices = findall(!iszero, pLattice)
+    @show indices[1]
 end
