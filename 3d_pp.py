@@ -5,10 +5,10 @@ import sys
 
 id_start = int(sys.argv[1])
 for coor in ["scoor","pcoor","ncoor"]:
-    file_name = "data/240721/240721_d"
+    file_name = "data/240922/240922_d"
 
     job_arr_start = 0
-    job_arr_end = 99
+    job_arr_end = 49
     job_arr_step = 1
     job_arr_l = np.arange(job_arr_start,job_arr_end+1,job_arr_step)
 
