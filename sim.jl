@@ -11,6 +11,24 @@ function genLatticeHist(dx,dy,dt)
     # return rand(Bool, (dx,dy,dt)), rand(Bool, (dx,dy,dt))
 end
 
+function genLatticeHistWarm(dx,dy,dt,pdr,panh,pgen,tempr)
+    plattice = zeros(Bool,(dx, dy))
+    nlattice = zeros(Bool,(dx, dy))
+        for t = 2:dt
+            platticeN = zeros(Bool,(dx, dy))
+            nlatticeN = zeros(Bool,(dx, dy))
+            updateParticleRndField(plattice,nlattice,platticeN,nlatticeN,dx,dy,pdr,pgen,panh,tempr)
+            plattice = platticeN
+            nlattice = nlatticeN
+        end
+
+    platticeHist = zeros(Bool, (dx,dy,dt))
+    platticeHist[:,:,1] = plattice
+    nlatticeHist = zeros(Bool, (dx,dy,dt))
+    nlatticeHist[:,:,1] = nlattice
+    return platticeHist, nlatticeHist
+end
+
 function genField(pLattice,nLattice,dx,dy)
     kernel = zeros(dx,dy)
     for y = 1:dy

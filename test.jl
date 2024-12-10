@@ -36,7 +36,7 @@ let
         pdf = 0.25
         pdr = 0.25
         panh = 1
-        pgen = 0.001*i
+        pgen = 0.01*i
         nsim = 100
         idx_start = 0
 
@@ -58,12 +58,12 @@ let
         dx = 100
         dy = 100
         dt = 200
-        pdr = 0.5
+        pdr = 0.
         panh = 1
         pgen = 0.01
-        tempr = 10
+        tempr = 1000
         nsim = 1000
-        idx_start = 40
+        idx_start = 50
 
         pcoor,ncoor,scoor,currentHistSum = expCoorRndField(dx,dy,dt,pdr,panh,pgen,nsim,tempr,true)
 
