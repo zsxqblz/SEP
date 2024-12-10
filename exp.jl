@@ -181,23 +181,62 @@ function expCoorRndField(dx,dy,dt,pdr,panh,pgen,nsim,tempr,showProg::Bool)
     pcoor = zeros(Float64,(dx, dy, dt))
     ncoor = zeros(Float64,(dx, dy, dt))
     scoor = zeros(Float64,(dx, dy, dt))
+    currentHistSum = zeros(Float64,(dx, dy, dt))
     @showprogress for sim_i = 1:nsim
-        pLatticeHist, nLatticeHist = genLatticeHist(dx,dy,dt)
+        # pLatticeHist, nLatticeHist = genLatticeHist(dx,dy,dt)
+        pLatticeHist, nLatticeHist = genLatticeHistWarm(dx,dy,dt,pdr,panh,pgen,tempr)
+        currentHist = zeros(Float64,(dx, dy, dt))
         for t = 2:dt
             plattice = @view pLatticeHist[:,:,t-1]
             nlattice = @view nLatticeHist[:,:,t-1]
             platticeN = @view pLatticeHist[:,:,t]
             nlatticeN = @view nLatticeHist[:,:,t]
-            updateParticleRndField(plattice,nlattice,platticeN,nlatticeN,dx,dy,pdr,pgen,panh,tempr)
+            current = @view currentHist[:,:,t]
+            # updateParticleRndField(plattice,nlattice,platticeN,nlatticeN,dx,dy,pdr,pgen,panh,tempr)
+            updateParticleRndField(plattice,nlattice,platticeN,nlatticeN,current,dx,dy,pdr,pgen,panh,tempr)
+            updateCurrent(current,plattice,nlattice,platticeN,nlatticeN,dx,dy)
         end
         pcoor += real(findCorrelationFFT(Int.(pLatticeHist)))
         ncoor += real(findCorrelationFFT(Int.(nLatticeHist)))
         scoor += real(findCorrelationFFT(Int.(pLatticeHist)-Int.(nLatticeHist)))
+        currentHistSum += currentHist
     end
     pcoor = pcoor / nsim
     ncoor = ncoor / nsim
     scoor = scoor / nsim
-    return pcoor,ncoor,scoor
+    currentHistSum = currentHistSum / nsim
+    return pcoor,ncoor,scoor,currentHistSum
+    # return Int.(pLatticeHist), Int.(nLatticeHist), Int.(pLatticeHist)-Int.(nLatticeHist)
+end
+
+function expDistCoorRndField(dx,dy,dt,pdr,panh,pgen,nsim,tempr,showProg::Bool)
+    pcoor = zeros(Float64,(dx, dy, dt))
+    ncoor = zeros(Float64,(dx, dy, dt))
+    scoor = zeros(Float64,(dx, dy, dt))
+    currentHistSum = zeros(Float64,(dx, dy, dt))
+    @distributed for sim_i = 1:nsim
+        pLatticeHist, nLatticeHist = genLatticeHist(dx,dy,dt)
+        currentHist = zeros(Float64,(dx, dy, dt))
+        for t = 2:dt
+            plattice = @view pLatticeHist[:,:,t-1]
+            nlattice = @view nLatticeHist[:,:,t-1]
+            platticeN = @view pLatticeHist[:,:,t]
+            nlatticeN = @view nLatticeHist[:,:,t]
+            current = @view currentHist[:,:,t]
+            # updateParticleRndField(plattice,nlattice,platticeN,nlatticeN,dx,dy,pdr,pgen,panh,tempr)
+            updateParticleRndField(plattice,nlattice,platticeN,nlatticeN,current,dx,dy,pdr,pgen,panh,tempr)
+            updateCurrent(current,plattice,nlattice,platticeN,nlatticeN,dx,dy)
+        end
+        pcoor += real(findCorrelationFFT(Int.(pLatticeHist)))
+        ncoor += real(findCorrelationFFT(Int.(nLatticeHist)))
+        scoor += real(findCorrelationFFT(Int.(pLatticeHist)-Int.(nLatticeHist)))
+        currentHistSum += currentHist
+    end
+    pcoor = pcoor / nsim
+    ncoor = ncoor / nsim
+    scoor = scoor / nsim
+    currentHistSum = currentHistSum / nsim
+    return pcoor,ncoor,scoor,currentHistSum
     # return Int.(pLatticeHist), Int.(nLatticeHist), Int.(pLatticeHist)-Int.(nLatticeHist)
 end
 
