@@ -214,7 +214,7 @@ function expDistCoorRndField(dx,dy,dt,pdr,panh,pgen,nsim,tempr,showProg::Bool)
     ncoor = zeros(Float64,(dx, dy, dt))
     scoor = zeros(Float64,(dx, dy, dt))
     currentHistSum = zeros(Float64,(dx, dy, dt))
-    @distributed for sim_i = 1:nsim
+    @showprogress for sim_i = 1:nsim
         pLatticeHist, nLatticeHist = genLatticeHist(dx,dy,dt)
         currentHist = zeros(Float64,(dx, dy, dt))
         for t = 2:dt

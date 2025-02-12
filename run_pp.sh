@@ -8,4 +8,4 @@
 #SBATCH --mail-type=end          # send email when job ends
 #SBATCH --mail-user=yz4281@princeton.edu
 
-python 3d_pp.py 8100
+python 3d_pp.py 12100
