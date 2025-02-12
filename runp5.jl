@@ -10,15 +10,15 @@ using Dates
 
 println("Current date and time: ", now())
 
-@everywhere dx = 150
-@everywhere dy = 150
+@everywhere dx = 100
+@everywhere dy = 100
 @everywhere dt = 400
-@everywhere pdr = 0.
+@everywhere pdr = 0.255608
 @everywhere panh = 1
-@everywhere pgen = 0.01
+@everywhere pgen = 0.00657279
 @everywhere tempr = 1000
-@everywhere nsim = 200
-@everywhere idx_start = 4
+@everywhere nsim = 100
+@everywhere idx_start = 1
 
 # Shared memory arrays
 pcoor = SharedArray{Float64}(dx, dy, dt)
@@ -27,6 +27,7 @@ scoor = SharedArray{Float64}(dx, dy, dt)
 
 @everywhere function run_simulation(dx, dy, dt, pdr, panh, pgen, tempr)
     pLatticeHist, nLatticeHist = genLatticeHistWarm(dx, dy, dt, pdr, panh, pgen, tempr)
+    # pLatticeHist, nLatticeHist = genLatticeHistFill(dx, dy, dt, pdr, panh, pgen, tempr)
     for t = 2:dt
         plattice = @view pLatticeHist[:, :, t-1]
         nlattice = @view nLatticeHist[:, :, t-1]
@@ -60,8 +61,8 @@ scoor = scoor / nsim
 x_l = collect(1:dx)
 y_l = collect(1:dy)
 t_l = collect(1:dt)
-save3DData(x_l,y_l,t_l,pcoor,string("data/241210/241210_",(idx_start),"_pcoor"))
-save3DData(x_l,y_l,t_l,ncoor,string("data/241210/241210_",(idx_start),"_ncoor"))
-save3DData(x_l,y_l,t_l,scoor,string("data/241210/241210_",(idx_start),"_scoor"))
+save3DData(x_l,y_l,t_l,pcoor,string("data/250211/250211_",(idx_start),"_pcoor"))
+save3DData(x_l,y_l,t_l,ncoor,string("data/250211/250211_",(idx_start),"_ncoor"))
+save3DData(x_l,y_l,t_l,scoor,string("data/250211/250211_",(idx_start),"_scoor"))
 
 println("Current date and time: ", now())

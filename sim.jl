@@ -29,6 +29,18 @@ function genLatticeHistWarm(dx,dy,dt,pdr,panh,pgen,tempr)
     return platticeHist, nlatticeHist
 end
 
+function genLatticeHistFill(dx,dy,dt,pdr,panh,pgen,tempr)
+    fillFrac = 0.25
+    fill = Int(fillFrac*dx*dy)
+
+    platticeHist = zeros(Bool, (dx,dy,dt))
+    nlatticeHist = zeros(Bool, (dx,dy,dt))
+
+    indices = randperm(length(platticeHist))[1:fill]
+    platticeHist[indices] .= true
+    return platticeHist, nlatticeHist
+end
+
 function genField(pLattice,nLattice,dx,dy)
     kernel = zeros(dx,dy)
     for y = 1:dy
